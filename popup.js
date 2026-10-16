@@ -52,7 +52,7 @@ async function getActivePage() {
   const injected = await chrome.scripting.executeScript({
     target: { tabId: tab.id },
     func: () => {
-      const clean = (value) => (value || "").replace(/\\s+/g, " ").trim();
+      const clean = (value) => (value || "").replace(/\s+/g, " ").trim();
       const title = document.title || "";
       const url = location.href;
       const pageText = document.body ? document.body.innerText : "";
