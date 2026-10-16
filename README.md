@@ -1,66 +1,81 @@
 # Wallet AI Browser Extension
 
-A local-first AI assistant for Google Chrome and Microsoft Edge. It analyzes the current webpage, answers questions using page context, suggests likely answers for quizzes and multiple-choice questions, and helps understand form fields.
+Wallet AI is a Chrome/Edge extension that reads a webpage only after you click an action, then sends the relevant text to a hosted AI backend for analysis, questions, and suggested answers. The extension is installed locally with **Load unpacked**; a Chrome Web Store developer account is not needed for personal installation.
 
-## Privacy and safety
+## Architecture
 
-- Page content is sent only to the local Ollama service at `http://127.0.0.1:11434`.
-- No cloud AI API, tracking, analytics, or account is required.
-- The extension reads a page only after you click **Analyze this page** or **Ask AI**.
-- It does not automatically submit forms or click answers.
-- Never use it to bypass proctoring, access controls, or assessment rules. Follow the rules of your school or website.
-- The AI can be wrong. Verify important answers.
+- Browser extension: runs on your computer.
+- Backend: Vercel serverless function at `/api/analyze`.
+- AI provider: OpenRouter's free-model router (`openrouter/free`), subject to model availability and provider limits.
+- The OpenRouter API key stays in the backend environment and is never placed in extension files.
+- Page text is sent online when you click Analyze, Suggest answers, or Ask AI. Do not send passwords, financial data, private messages, or other sensitive content.
 
-## 1. Install Ollama
+OpenRouter currently lists a free tier with 50 requests/day and free models; limits and model availability can change. See https://openrouter.ai/pricing and https://openrouter.ai/docs/api-reference/limits.
 
-Install Ollama from https://ollama.com/download and start it.
+## 1. Deploy backend from GitHub to Vercel
 
-In Windows Terminal, download a small model:
-```powershell
-ollama pull qwen2.5:3b
-```
+1. Sign in to Vercel and import `https://github.com/G-tech-dev/wallet` as a project.
+2. Keep the project root as the repository root. Vercel should detect the Node.js serverless function at `api/analyze.js`.
+3. In the Vercel project's **Settings → Environment Variables**, add:
+   - `OPENROUTER_API_KEY`: your key from https://openrouter.ai/keys
+   - `WALLET_ACCESS_CODE`: create a long random passphrase for your personal use
+   - `EXTENSION_ORIGIN`: the extension origin described in section 3, for example `chrome-extension://abcdefghijklmnopqrstuvwxyzabcdef`
+4. Apply the variables to Production (and Preview if you use previews), then redeploy.
+5. Your endpoint will be `https://YOUR-PROJECT.vercel.app/api/analyze`.
 
-Confirm the model is available:
-```powershell
-ollama list
-```
+Never commit the OpenRouter key or the access code to GitHub. Do not expose the OpenRouter key in the extension.
 
-The extension uses Ollama's local API at `http://127.0.0.1:11434/api/chat`. It does not require an API key. If your Ollama setup does not accept requests from the extension, check that Ollama is running and that its local API is available.
+## 2. Install extension locally (no developer account)
 
-## 2. Install the extension in Chrome
+1. Download the repository as ZIP from GitHub and extract it, or clone it with Git.
+2. Open `chrome://extensions` in Chrome or `edge://extensions` in Edge.
+3. Turn on **Developer mode**, choose **Load unpacked**, and select the extracted `wallet` folder (the folder containing `manifest.json`).
+4. Copy the extension ID shown on the extension card. Its origin is `chrome-extension://YOUR_EXTENSION_ID`.
+5. In Vercel, set `EXTENSION_ORIGIN` to that exact origin, save, and redeploy the backend.
 
-1. Download or clone this repository.
-2. Open `chrome://extensions`.
-3. Enable **Developer mode**.
-4. Click **Load unpacked** and select the repository folder containing `manifest.json`.
+If you load the unpacked extension from a different browser profile or computer, its extension ID may differ; configure a matching origin for that installation.
 
-## 3. Install in Microsoft Edge
+## 3. Configure the extension
 
-1. Open `edge://extensions`.
-2. Enable **Developer mode**.
-3. Click **Load unpacked** and select the same folder.
+1. Open Wallet AI's popup.
+2. Enter the deployed URL ending in `/api/analyze`.
+3. Enter the same `WALLET_ACCESS_CODE` value you set in Vercel.
+4. Click **Save settings**, then open a normal webpage and try an action.
 
-## 4. Use it
+## 4. Backend behavior and safety
 
-1. Open a normal webpage (browser internal pages such as `chrome://` cannot be analyzed).
-2. Click the Wallet AI extension icon.
-3. Choose **Analyze this page** for a summary and page-specific insights.
-4. Enter a question or choose **Suggest answers** to identify visible questions and likely answers.
-5. Review the explanation and verify the answer yourself.
+- Accepts only POST requests from the exact configured extension origin.
+- Requires the configured access code.
+- Limits the context to 18,000 characters, the task to 2,000 characters, and AI output to 900 tokens.
+- Sends the API key only from the server to OpenRouter.
+- Does not auto-submit forms, click answers, or store webpage contents on purpose.
+- Returns clear errors when free-provider limits are reached.
+
+Important: CORS and an access code are useful safeguards, not strong user authentication. Anyone who can inspect a locally installed extension can discover the access code saved in it, and a public endpoint can still be targeted. Keep the code private, use this setup for personal use, rotate it if exposed, and monitor provider usage. For a public multi-user release, add proper user authentication and robust rate limiting before sharing the endpoint.
 
 ## Project structure
 
 ```
 wallet/
-├── manifest.json  # Manifest V3 configuration and minimal permissions
-├── popup.html     # Extension popup interface
-├── popup.css      # Popup styling
-├── popup.js       # Page extraction and local Ollama requests
-└── README.md      # Setup and privacy instructions
+├── api/
+│   └── analyze.js    # Vercel serverless API; calls OpenRouter
+├── manifest.json    # Manifest V3 extension config
+├── package.json     # Node runtime metadata
+├── popup.html       # Extension popup interface
+├── popup.css        # Popup styling
+├── popup.js         # Page extraction and backend request
+└── README.md
 ```
 
-## Configuration
+## Local install commands (Windows)
 
-The popup lets you change the local Ollama model name. The default is `qwen2.5:3b`. Install the chosen model first with `ollama pull MODEL_NAME`.
+```powershell
+git clone https://github.com/G-tech-dev/wallet.git
+cd wallet
+```
 
-The extension uses the local API only. Do not change the endpoint to a public server unless you understand the privacy implications.
+After future changes, update the folder with:
+
+```powershell
+git pull origin main
+```
