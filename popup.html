@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Wallet AI</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <main class="app">
+    <header class="header">
+      <div class="logo" aria-hidden="true">W</div>
+      <div>
+        <h1>Wallet AI</h1>
+        <p class="subtitle">Your private, local page assistant</p>
+      </div>
+      <span class="local-tag">LOCAL AI</span>
+    </header>
+
+    <section class="model-row">
+      <label for="model">Ollama model</label>
+      <input id="model" type="text" value="qwen2.5:3b" autocomplete="off" spellcheck="false">
+      <button id="saveModel" class="button secondary small" type="button">Save</button>
+    </section>
+
+    <section class="actions">
+      <button id="analyze" class="button primary" type="button">Analyze this page</button>
+      <button id="suggest" class="button secondary" type="button">Suggest answers</button>
+    </section>
+
+    <section class="question-section">
+      <label for="question">Ask about this page</label>
+      <textarea id="question" rows="3" placeholder="Example: What is the main point of this page? Or explain these questions..."></textarea>
+      <button id="ask" class="button primary" type="button">Ask AI</button>
+    </section>
+
+    <div id="status" class="status" role="status" aria-live="polite">Ready. Page content is read only when you click an action.</div>
+    <section id="result" class="result" aria-live="polite" hidden>
+      <div class="result-heading">
+        <h2>AI response</h2>
+        <button id="copy" class="button secondary small" type="button">Copy</button>
+      </div>
+      <pre id="answer"></pre>
+    </section>
+
+    <footer>Runs with Ollama on your computer. AI answers may be incorrect.</footer>
+  </main>
+  <script src="popup.js"></script>
+</body>
+</html>
