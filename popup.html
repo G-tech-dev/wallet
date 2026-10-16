@@ -12,15 +12,18 @@
       <div class="logo" aria-hidden="true">W</div>
       <div>
         <h1>Wallet AI</h1>
-        <p class="subtitle">Your private, local page assistant</p>
+        <p class="subtitle">Online AI page assistant</p>
       </div>
-      <span class="local-tag">LOCAL AI</span>
+      <span class="local-tag">ONLINE AI</span>
     </header>
 
-    <section class="model-row">
-      <label for="model">Ollama model</label>
-      <input id="model" type="text" value="qwen2.5:3b" autocomplete="off" spellcheck="false">
-      <button id="saveModel" class="button secondary small" type="button">Save</button>
+    <section class="settings">
+      <label for="apiUrl">Hosted backend URL</label>
+      <input id="apiUrl" type="url" placeholder="https://your-project.vercel.app/api/analyze" autocomplete="url" spellcheck="false">
+      <label for="accessCode">Wallet AI access code</label>
+      <input id="accessCode" type="password" placeholder="Backend access code" autocomplete="off">
+      <button id="saveSettings" class="button secondary" type="button">Save settings</button>
+      <p class="hint">Your access code is stored in this browser profile. Page text is sent to an online AI provider when you run an action.</p>
     </section>
 
     <section class="actions">
@@ -30,7 +33,7 @@
 
     <section class="question-section">
       <label for="question">Ask about this page</label>
-      <textarea id="question" rows="3" placeholder="Example: What is the main point of this page? Or explain these questions..."></textarea>
+      <textarea id="question" rows="3" placeholder="Example: Explain this page or help me understand these questions..."></textarea>
       <button id="ask" class="button primary" type="button">Ask AI</button>
     </section>
 
@@ -43,7 +46,7 @@
       <pre id="answer"></pre>
     </section>
 
-    <footer>Runs with Ollama on your computer. AI answers may be incorrect.</footer>
+    <footer>AI runs online. Never send passwords or sensitive information. Answers may be incorrect.</footer>
   </main>
   <script src="popup.js"></script>
 </body>
