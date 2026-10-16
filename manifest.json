@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "Wallet AI — Local Page Assistant",
+  "version": "1.0.0",
+  "description": "Analyze webpages, understand forms, and suggest answers using local AI.",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage"
+  ],
+  "host_permissions": [
+    "http://127.0.0.1:11434/*",
+    "http://localhost:11434/*"
+  ],
+  "action": {
+    "default_title": "Wallet AI",
+    "default_popup": "popup.html"
+  }
+}
