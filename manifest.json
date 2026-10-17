@@ -1,18 +1,10 @@
 {
   "manifest_version": 3,
-  "name": "Wallet AI — Online Page Assistant",
+  "name": "Wallet — Migrated",
   "version": "1.1.0",
-  "description": "Analyze webpages, understand forms, and suggest answers using hosted AI.",
-  "permissions": [
-    "activeTab",
-    "scripting",
-    "storage"
-  ],
-  "host_permissions": [
-    "https://*.vercel.app/*"
-  ],
+  "description": "The former Wallet AI extension has moved to the Rwanda-Stock repository.",
   "action": {
-    "default_title": "Wallet AI",
+    "default_title": "Wallet project moved",
     "default_popup": "popup.html"
   }
 }
